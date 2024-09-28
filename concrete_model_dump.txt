@@ -1,0 +1,51 @@
+2 Set Declarations
+    doors : Doors between two rooms of the museum.
+        Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain      : Size : Members
+        None :     2 : rooms*rooms :   11 : {('A', 'B'), ('B', 'H'), ('H', 'I'), ('I', 'J'), ('A', 'C'), ('A', 'D'), ('D', 'E'), ('A', 'G'), ('G', 'I'), ('A', 'F'), ('F', 'D')}
+    rooms : Rooms of the museum
+        Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain : Size : Members
+        None :     1 :    Any :   10 : {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'}
+
+1 Var Declarations
+    guard_at_door : Binary variable: 1 if guard is placed, 0 otherwise.
+        Size=11, Index=doors
+        Key        : Lower : Value : Upper : Fixed : Stale : Domain
+        ('A', 'B') :     0 :  None :     1 : False :  True : Binary
+        ('A', 'C') :     0 :  None :     1 : False :  True : Binary
+        ('A', 'D') :     0 :  None :     1 : False :  True : Binary
+        ('A', 'F') :     0 :  None :     1 : False :  True : Binary
+        ('A', 'G') :     0 :  None :     1 : False :  True : Binary
+        ('B', 'H') :     0 :  None :     1 : False :  True : Binary
+        ('D', 'E') :     0 :  None :     1 : False :  True : Binary
+        ('F', 'D') :     0 :  None :     1 : False :  True : Binary
+        ('G', 'I') :     0 :  None :     1 : False :  True : Binary
+        ('H', 'I') :     0 :  None :     1 : False :  True : Binary
+        ('I', 'J') :     0 :  None :     1 : False :  True : Binary
+
+1 Objective Declarations
+    objective_function : Have the minimum number of doors guarded.
+        Size=1, Index=None, Active=True
+        Key  : Active : Sense    : Expression
+        None :   True : minimize : guard_at_door[A,B] + guard_at_door[B,H] + guard_at_door[H,I] + guard_at_door[I,J] + guard_at_door[A,C] + guard_at_door[A,D] + guard_at_door[D,E] + guard_at_door[A,G] + guard_at_door[G,I] + guard_at_door[A,F] + guard_at_door[F,D]
+
+1 Constraint Declarations
+    constraint_at_least_one_guard_per_room : Force that each room is guarded for at least one guard.
+
+             This means that at least in one of the doors of each room, a guard should be placed.
+             
+        Size=10, Index=rooms, Active=True
+        Key : Lower : Body                                                                                                   : Upper : Active
+          A :   1.0 : guard_at_door[A,B] + guard_at_door[A,C] + guard_at_door[A,D] + guard_at_door[A,G] + guard_at_door[A,F] :  +Inf :   True
+          B :   1.0 :                                                                guard_at_door[A,B] + guard_at_door[B,H] :  +Inf :   True
+          C :   1.0 :                                                                                     guard_at_door[A,C] :  +Inf :   True
+          D :   1.0 :                                           guard_at_door[A,D] + guard_at_door[D,E] + guard_at_door[F,D] :  +Inf :   True
+          E :   1.0 :                                                                                     guard_at_door[D,E] :  +Inf :   True
+          F :   1.0 :                                                                guard_at_door[A,F] + guard_at_door[F,D] :  +Inf :   True
+          G :   1.0 :                                                                guard_at_door[A,G] + guard_at_door[G,I] :  +Inf :   True
+          H :   1.0 :                                                                guard_at_door[B,H] + guard_at_door[H,I] :  +Inf :   True
+          I :   1.0 :                                           guard_at_door[H,I] + guard_at_door[I,J] + guard_at_door[G,I] :  +Inf :   True
+          J :   1.0 :                                                                                     guard_at_door[I,J] :  +Inf :   True
+
+5 Declarations: rooms doors guard_at_door constraint_at_least_one_guard_per_room objective_function
